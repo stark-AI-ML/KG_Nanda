@@ -3,78 +3,6 @@ import doctorService from "../../services/doctorService";
 import bookingService from "../../services/bookingService";
 import "./BookAppointment.css";
 
-const DEPARTMENTS = [
-  "Obstetrics & Gynecology",
-  "General Consultant",
-  "General Medicine",
-  "Critical Care",
-  "Orthopaedics",
-  "General & Laparoscopy Surgery",
-  "General Surgery",
-  "Urology",
-  "Anaesthetist",
-  "Ayurvedic General Surgeons",
-  "Paediatric",
-  "ENT",
-  "RMO - Resident Medical Officer",
-];
-
-const DOCTORS_BY_DEPT = {
-  "Obstetrics & Gynecology": [
-    "Dr. Anand Prakash Tiwari",
-    "Dr. Shobha Jaiswal",
-    "Dr. Sadhna Chaurasiya",
-  ],
-  "General Consultant": [
-    "Dr. Ankit Kumar Singh",
-    "Dr. Akhilesh Kumar Singh",
-    "Dr. Umesh Kumar Maurya",
-    "Dr. Parvez Ahmad",
-  ],
-  "General Medicine": [
-    "Dr. Ankit Kumar Singh",
-  ],
-  "Critical Care": [
-    "Dr. Umesh Kumar Maurya",
-  ],
-  "Orthopaedics": [
-    "Dr. Arun Kumar Singh",
-    "Dr. Pankaj Kumar Singh",
-    "Dr. Niket Raj Garg",
-  ],
-  "General & Laparoscopy Surgery": [
-    "Dr. Abhinav Katiyar",
-    "Dr. Vishwanath Pratap Singh",
-  ],
-  "General Surgery": [
-    "Dr. Mrityunjay Prasad",
-    "Dr. Yogesh Kumar Pandey",
-  ],
-  "Urology": [
-    "Dr. Vikram Singh",
-  ],
-  "Anaesthetist": [
-    "Dr. Sushil Krishna Murti",
-  ],
-  "Ayurvedic General Surgeons": [
-    "Dr. Mrityunjay Prasad",
-    "Dr. Yogesh Kumar Pandey",
-  ],
-  "Paediatric": [
-    "Dr. Dilip Kumar Gupta",
-    "Dr. Prabhunath Dubey",
-  ],
-  "ENT": [
-    "Dr. Abhinav Mishra",
-  ],
-  "RMO - Resident Medical Officer": [
-    "Dr. Ankit Kumar Singh",
-    "Dr. Akhilesh Kumar Singh",
-    "Dr. Parvez Ahmad",
-    "Dr. Umesh Kumar Maurya",
-  ],
-};
-
 const getTodayStr = () => {
   const d = new Date();
   const year = d.getFullYear();
@@ -104,7 +32,15 @@ export default function BookAppointment() {
     preferredTime: "",
     gender: "",
     message: "",
+    patientType: "New Patient",
+    uhid: "",
   });
+
+  // Old Patient Lookup state
+  const [uhidQuery, setUhidQuery] = useState("");
+  const [searchingPatient, setSearchingPatient] = useState(false);
+  const [patientMemory, setPatientMemory] = useState(null);
+  const [lookupMessage, setLookupMessage] = useState({ text: "", type: "" });
 
   const [doctorsList, setDoctorsList] = useState([]);
   const [availableDepartments, setAvailableDepartments] = useState([]);
@@ -195,6 +131,66 @@ export default function BookAppointment() {
     });
   };
 
+  // Handle Patient Type Tab Switch (New Patient vs Old Patient)
+  const handlePatientTypeChange = (type) => {
+    setForm((prev) => ({
+      ...prev,
+      patientType: type,
+    }));
+    setLookupMessage({ text: "", type: "" });
+  };
+
+  // Execute Patient Memory Lookup from DocBot / Backend
+  const handlePatientLookup = async (e) => {
+    if (e) e.preventDefault();
+    const query = uhidQuery.trim();
+    if (!query) {
+      setLookupMessage({
+        text: "कृपया UHID या 10-अंकों का रजिस्टर्ड मोबाइल नंबर दर्ज करें (Please enter UHID or registered phone)",
+        type: "error",
+      });
+      return;
+    }
+
+    setSearchingPatient(true);
+    setLookupMessage({ text: "DocBot memory lookup in progress...", type: "info" });
+    setPatientMemory(null);
+
+    try {
+      const res = await bookingService.lookupPatient(query);
+      if (res.success && res.patient) {
+        const p = res.patient;
+        setPatientMemory(p);
+        setForm((prev) => ({
+          ...prev,
+          fullName: p.name || prev.fullName,
+          phone: p.phone || prev.phone,
+          email: p.email || prev.email,
+          gender: p.gender || prev.gender,
+          uhid: p.uhid,
+          patientType: "Old Patient",
+        }));
+        setLookupMessage({
+          text: `✅ Existing Patient Memory Found! UHID: ${p.uhid} | Total Visits: ${p.visitCount || 1}`,
+          type: "success",
+        });
+      } else {
+        setPatientMemory(null);
+        setLookupMessage({
+          text: res.message || "No previous patient record found. You can fill details manually below.",
+          type: "warning",
+        });
+      }
+    } catch (err) {
+      setLookupMessage({
+        text: "Error searching patient memory. Please check connection.",
+        type: "error",
+      });
+    } finally {
+      setSearchingPatient(false);
+    }
+  };
+
   const handleReset = () => {
     setForm({
       fullName: "",
@@ -207,7 +203,12 @@ export default function BookAppointment() {
       preferredTime: "",
       gender: "",
       message: "",
+      patientType: "New Patient",
+      uhid: "",
     });
+    setUhidQuery("");
+    setPatientMemory(null);
+    setLookupMessage({ text: "", type: "" });
     setAvailableDoctors([]);
     setError("");
   };
@@ -260,10 +261,15 @@ export default function BookAppointment() {
             </div>
 
             <span className="kg-success-badge">Booking Confirmed</span>
-            <h1 className="kg-success-title">Appointment Request Registered!</h1>
+            <h1 className="kg-success-title">
+              {form.patientType === "Old Patient" ? "Returning Patient Appointment Confirmed!" : "New Patient Registration & Booking Complete!"}
+            </h1>
 
-            {/* Badges for Booking Reference, Patient UHID, and OPD Token Number */}
+            {/* Badges for Patient Type, Booking Reference, Patient UHID, and OPD Token Number */}
             <div className="flex flex-wrap items-center justify-center gap-3 my-4">
+              <div className="kg-booking-id-pill bg-purple-50 border-purple-200 text-purple-900">
+                <span>Category:</span> <strong>{form.patientType}</strong>
+              </div>
               {bookingId && (
                 <div className="kg-booking-id-pill">
                   <span>Booking Ref:</span> <strong>{bookingId}</strong>
@@ -282,9 +288,9 @@ export default function BookAppointment() {
             </div>
 
             <p className="kg-success-desc">
-              Namaste <strong>{form.fullName}</strong>, your appointment request for{" "}
+              Namaste <strong>{form.fullName}</strong>, your OPD appointment request for{" "}
               <strong>{form.department}</strong>{" "}
-              {form.doctor ? `with ${form.doctor}` : ""} has been received successfully.
+              {form.doctor ? `with ${form.doctor}` : ""} has been registered successfully.
             </p>
 
             <div className="kg-success-divider" />
@@ -305,7 +311,7 @@ export default function BookAppointment() {
             </div>
 
             <p className="kg-success-callout">
-              Our patient coordinator will contact you shortly to confirm exact OPD token timing.
+              Our patient coordinator will contact you shortly to verify your OPD slot and token timing.
             </p>
 
             <div className="kg-success-emergency-box">
@@ -338,7 +344,7 @@ export default function BookAppointment() {
           <div className="kg-hero-text-content">
             <h1 className="kg-hero-title">Book your visit with KG Nanda Hospital</h1>
             <p className="kg-hero-subtitle">
-              Choose your department, preferred specialist doctor, date, and time. Our team will review your request and confirm the slot shortly.
+              Unified Patient Registration & OPD Appointment Desk. Register as a new patient or lookup your existing patient record instantly.
             </p>
           </div>
 
@@ -407,10 +413,99 @@ export default function BookAppointment() {
           {/* RIGHT COLUMN: Form Card */}
           <div className="kg-form-column">
             <div className="kg-form-card">
-              <div className="kg-form-section-badge">APPOINTMENT DETAILS</div>
+              <div className="kg-form-section-badge">PATIENT REGISTRATION & APPOINTMENT</div>
               <h2 className="kg-form-heading">
-                Tell us when and whom you would like to visit
+                Patient Registration & OPD Appointment Desk
               </h2>
+
+              {/* PATIENT TYPE TOGGLE SELECTOR */}
+              <div className="kg-patient-type-wrapper">
+                <label className="kg-type-label">Select Patient Category:</label>
+                <div className="kg-patient-type-tabs">
+                  <button
+                    type="button"
+                    className={`kg-patient-tab-btn ${form.patientType === "New Patient" ? "active" : ""}`}
+                    onClick={() => handlePatientTypeChange("New Patient")}
+                  >
+                    <span className="kg-tab-icon">🆕</span>
+                    <span>New Patient (नया मरीज)</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`kg-patient-tab-btn ${form.patientType === "Old Patient" ? "active" : ""}`}
+                    onClick={() => handlePatientTypeChange("Old Patient")}
+                  >
+                    <span className="kg-tab-icon">🏥</span>
+                    <span>Old Patient (पुराना मरीज / UHID)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* OLD PATIENT LOOKUP SECTION */}
+              {form.patientType === "Old Patient" && (
+                <div className="kg-old-patient-box">
+                  <div className="kg-lookup-header">
+                    <span className="kg-lookup-title">🔍 Lookup Registered Patient Profile</span>
+                    <span className="kg-lookup-sub">Enter UHID or Mobile Number to retrieve patient memory</span>
+                  </div>
+                  <div className="kg-lookup-input-group">
+                    <input
+                      type="text"
+                      className="kg-input"
+                      placeholder="e.g. UHID-108245 or 9876543210"
+                      value={uhidQuery}
+                      onChange={(e) => setUhidQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handlePatientLookup(e);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="kg-btn-lookup"
+                      onClick={handlePatientLookup}
+                      disabled={searchingPatient}
+                    >
+                      {searchingPatient ? "Searching..." : "Fetch Memory"}
+                    </button>
+                  </div>
+
+                  {lookupMessage.text && (
+                    <div className={`kg-lookup-alert kg-alert-${lookupMessage.type}`}>
+                      {lookupMessage.text}
+                    </div>
+                  )}
+
+                  {patientMemory && (
+                    <div className="kg-memory-card">
+                      <div className="kg-memory-badge">✅ Verified Patient Memory</div>
+                      <div className="kg-memory-grid">
+                        <div>
+                          <span>UHID:</span> <strong>{patientMemory.uhid}</strong>
+                        </div>
+                        <div>
+                          <span>Name:</span> <strong>{patientMemory.name}</strong>
+                        </div>
+                        <div>
+                          <span>Phone:</span> <strong>{patientMemory.phone}</strong>
+                        </div>
+                        <div>
+                          <span>Visits:</span> <strong>{patientMemory.visitCount || 1}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* NEW PATIENT BANNER */}
+              {form.patientType === "New Patient" && (
+                <div className="kg-new-patient-banner">
+                  <span>✨ New Registration: A new <strong>Patient UHID</strong> and <strong>OPD Token</strong> will be automatically issued upon booking confirmation.</span>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="kg-booking-form">
                 {/* Row 1: Department, Doctor, Date */}
@@ -486,17 +581,15 @@ export default function BookAppointment() {
                   </div>
                 </div>
 
-                
-
                 <hr className="kg-form-divider" />
 
-                <div className="kg-form-section-badge">PATIENT INFORMATION</div>
+                <div className="kg-form-section-badge">PATIENT PERSONAL INFORMATION</div>
 
                 {/* Row 2: Name & Phone */}
                 <div className="kg-form-row kg-row-2col">
                   <div className="kg-field-group">
                     <label htmlFor="fullName">
-                      Your name <span className="kg-required">*</span>
+                      Patient Full Name <span className="kg-required">*</span>
                     </label>
                     <input
                       id="fullName"
@@ -512,13 +605,13 @@ export default function BookAppointment() {
 
                   <div className="kg-field-group">
                     <label htmlFor="phone">
-                      Phone <span className="kg-required">*</span>
+                      Mobile Number <span className="kg-required">*</span>
                     </label>
                     <input
                       id="phone"
                       name="phone"
                       type="tel"
-                      placeholder="Enter phone number"
+                      placeholder="Enter 10-digit mobile number"
                       value={form.phone}
                       onChange={handleChange}
                       required
@@ -569,13 +662,13 @@ export default function BookAppointment() {
                 <div className="kg-form-row kg-row-1col">
                   <div className="kg-field-group">
                     <label htmlFor="message">
-                      Patient Problem <span className="kg-optional">(optional)</span>
+                      Patient Problem / Reason for Visit <span className="kg-optional">(optional)</span>
                     </label>
                     <textarea
                       id="message"
                       name="message"
                       rows={3}
-                      placeholder="Mention any active symptoms or chronic conditions..."
+                      placeholder="Mention active symptoms, health history, or chronic conditions..."
                       value={form.message}
                       onChange={handleChange}
                       className="kg-input kg-textarea"
@@ -590,14 +683,14 @@ export default function BookAppointment() {
                   <button type="submit" disabled={loading} className="kg-btn-primary">
                     {loading ? (
                       <span className="kg-spinner-text">
-                        <span className="kg-spinner"></span> Processing...
+                        <span className="kg-spinner"></span> Processing Registration...
                       </span>
                     ) : (
-                      "Confirm Booking"
+                      form.patientType === "Old Patient" ? "Confirm Returning Patient Booking" : "Register & Confirm Booking"
                     )}
                   </button>
                   <button type="button" onClick={handleReset} className="kg-btn-cancel">
-                    Cancel
+                    Reset Form
                   </button>
                 </div>
               </form>

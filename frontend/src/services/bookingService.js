@@ -24,6 +24,8 @@ export const bookingService = {
       timeSlot: form.preferredTime || 'Any',
       message: stripHindiText(form.message || ''),
       problemDescription: stripHindiText(form.message || ''),
+      patientType: form.patientType || 'New Patient',
+      uhid: form.uhid || '',
       type: 'OPD',
       source: form.source || form.bookingSource || 'website',
       bookingSource: form.source || form.bookingSource || 'website',
@@ -43,6 +45,7 @@ export const bookingService = {
       data.patient?.uhid ||
       data.booking?.uhid ||
       data.patientId?.uhid ||
+      form.uhid ||
       '';
 
     const tokenNumber =
@@ -57,9 +60,25 @@ export const bookingService = {
       bookingId,
       uhid,
       tokenNumber,
+      patientType: data.patientType || form.patientType || 'New Patient',
       booking: data.booking || data,
       message: data.message || 'Appointment request registered successfully',
     };
+  },
+
+  /**
+   * Lookup existing patient memory by UHID or Phone number
+   */
+  async lookupPatient(query) {
+    try {
+      const response = await api.get('/patients/lookup', {
+        params: { query },
+      });
+      return response.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Patient record not found.';
+      return { success: false, message: msg };
+    }
   },
 };
 
