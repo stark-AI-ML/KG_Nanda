@@ -2,9 +2,10 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import whatsappRoutes from './routes/whatsappRoutes.js';
-import bookingRoutes from './routes/bookingRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
+import whatsappRoutes from './src/routes/whatsappRoutes.js';
+import bookingRoutes from './src/routes/bookingRoutes.js';
+import adminRoutes from './src/routes/adminRoutes.js';
+import patientRoutes from './src/routes/patientRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -52,6 +53,7 @@ app.get('/', (req, res) => res.send('KG Nanda Hospital API is Running Live 🚀'
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/patients', patientRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

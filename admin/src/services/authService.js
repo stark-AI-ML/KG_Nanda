@@ -1,3 +1,4 @@
-const API=import.meta.env.VITE_API_URL||"http://localhost:5000/api";
+const rawApi = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API = rawApi.endsWith("/api") ? rawApi : `${rawApi.replace(/\/+$/, "")}/api`;
 async function request(url,options={}){const r=await fetch(API+url,{...options,headers:{"Content-Type":"application/json",...(options.headers||{})}});if(!r.ok)throw new Error("API request failed");return r.json()}
 export const authService={list:()=>request("/auth"),getById:id=>request(`/auth/${id}`),create:data=>request("/auth",{method:"POST",body:JSON.stringify(data)}),update:(id,data)=>request(`/auth/${id}`,{method:"PUT",body:JSON.stringify(data)}),remove:id=>request(`/auth/${id}`,{method:"DELETE"})};
