@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { ChevronRight, FileText, Calendar } from "lucide-react";
 import "./BlogSection.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const rawEnv = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE_URL = rawEnv.replace(/\/api\/?$/, "").replace(/\/+$/, "");
 
 const mockBlogs = [
   {

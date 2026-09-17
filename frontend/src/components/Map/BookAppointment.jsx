@@ -3,8 +3,6 @@ import doctorService from "../../services/doctorService";
 import bookingService from "../../services/bookingService";
 import "./BookAppointment.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
 const DEPARTMENTS = [
   "Obstetrics & Gynecology",
   "General Consultant",
