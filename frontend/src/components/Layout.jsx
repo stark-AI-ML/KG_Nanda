@@ -4,7 +4,6 @@ import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import FloatingActions from "./Map/FloatingActions";
 import HelplineDesk from "./HelplineDesk/HelplineDesk";
-import ChatBot from "./ChatBot/ChatBot";
 import WhatsAppFloatPage from "../Pages/WhatsAppFloat";
 
 const Layout = () => {
@@ -20,8 +19,7 @@ const Layout = () => {
 
             <HelplineDesk />
             <FloatingActions />
-            <ChatBot />
-            <WhatsAppFloatPage/>
+            <WhatsAppFloatPage />
 
             {/* Footer */}
             <Footer />

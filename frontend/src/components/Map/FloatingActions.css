@@ -26,9 +26,9 @@
    ========================================================================== */
 .kg-scroll-top-btn {
   position: fixed;
-  bottom: 20px;
-  right: 44px;
-  z-index: 99999;
+  bottom: 94px;
+  right: 32px;
+  z-index: 99998;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -558,8 +558,8 @@
     letter-spacing: 1.8px;
   }
   .kg-scroll-top-btn {
-    right: 26px !important;
-    bottom: 18px !important;
+    right: 22px !important;
+    bottom: 78px !important;
     width: 40px !important;
     height: 40px !important;
   }

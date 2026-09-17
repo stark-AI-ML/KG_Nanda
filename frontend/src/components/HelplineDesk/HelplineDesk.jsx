@@ -41,23 +41,28 @@ export default function HelplineDesk() {
       <div 
         className="kg-helpline-vertical-bar"
         onClick={() => setIsOpen((prev) => !prev)}
-        title="24x7 Helpline Desk - मरीज़ सहायता केंद्र"
-        aria-label="Toggle Helpline Desk"
+        title="24x7 मरीज़ सहायता केंद्र - KG Nanda Hospital"
+        aria-label="24x7 सहायता केंद्र खोलें"
       >
         <div className="kg-helpline-shimmer"></div>
         
         {/* Live Active Beacon Indicator */}
-        <span className="kg-helpline-indicator"></span>
+        <div className="kg-helpline-beacon-wrap">
+          <span className="kg-helpline-indicator"></span>
+        </div>
 
         {/* Headset Icon */}
         <div className="kg-helpline-icon-wrap">
-          <svg className="kg-helpline-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="kg-helpline-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
             <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
           </svg>
         </div>
 
-        <span className="kg-helpline-text">HELPLINE DESK</span>
+        {/* Hindi Bold Text (Unbroken Ligature Rendering) */}
+        <div className="kg-helpline-text-container">
+          <span className="kg-helpline-text">सहायता केंद्र</span>
+        </div>
       </div>
 
       {/* 2. EXPANDABLE DRAWER CARD */}

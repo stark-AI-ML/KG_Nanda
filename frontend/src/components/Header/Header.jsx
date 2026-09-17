@@ -111,24 +111,29 @@ const Header = () => {
              
             </div>
 
-            {/* Right - WhatsApp & Emergency Call (No duplicate number text) */}
+            {/* Right - Helpline Numbers */}
             <div className="flex-shrink-0 px-2 sm:px-4 text-right flex justify-end items-center gap-2 sm:gap-4">
 
-              {/* WhatsApp Icon */}
-              <a href="https://wa.me/919838850287" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:opacity-90 transition-opacity drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)]" title="Chat on WhatsApp">
-                <svg className="w-[17px] h-[17px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12.004 2C6.48 2 2 6.48 2 12.004c0 1.73.44 3.36 1.21 4.79l-1.21 4.41 4.53-1.19a9.92 9.92 0 0 0 4.47 1.07c5.52 0 10.01-4.48 10.01-10.01C22.01 6.48 17.52 2 12.004 2z" fill="#25D366" />
-                  <path d="M12.004 3.73c-4.56 0-8.27 3.71-8.27 8.27 0 1.6.46 3.1 1.25 4.38l-.75 2.74 2.82-.74a8.204 8.204 0 0 0 4.95 1.62c4.56 0 8.27-3.71 8.27-8.27 0-4.56-3.71-8.27-8.27-8.27zm4.62 11.53c-.19.53-.94.98-1.47 1.03-.36.04-.84.07-2.45-.6-2.06-.85-3.36-2.95-3.46-3.09-.1-.14-.83-1.11-.83-2.12 0-1.01.52-1.5 1.11-1.7.19-.07.39-.1.52-.1.13 0 .26 0 .38.01.12.01.29-.05.45.35.17.41.58 1.41.63 1.51.05.1.09.22.02.36-.07.14-.1.22-.2.34-.1.12-.22.27-.31.36-.1.1-.21.21-.09.42.12.2.53.87 1.13 1.41.78.69 1.43.91 1.64 1.01.2.1.32.08.44-.05.12-.14.51-.59.65-.9.14-.3.27-.25.46-.18.19.07 1.19.56 1.39.66.2.1.34.15.39.24.05.09.05.49-.14 1.03z" fill="#ffffff" />
-                </svg>
-                <span className="whitespace-nowrap hidden md:inline text-[12px]">91-9838850287</span>
-              </a>
-
-              {/* Phone Call Icon & Number */}
-              <a href="tel:+919838850287" className="inline-flex items-center gap-1.5 hover:text-blue-200 transition-colors border-l border-white/20 pl-2 sm:pl-3">
-                <svg className="w-[14px] h-[14px]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              {/* Helpline No. 1 */}
+              <a href="tel:8840376333" className="inline-flex items-center gap-1.5 hover:text-blue-200 transition-colors" title="Call Helpline No. 1">
+                <svg className="w-[14px] h-[14px] text-[#35b6b4]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21.366 16.918l-3.234-1.618a1.364 1.364 0 00-1.593.303l-1.428 1.428a15.707 15.707 0 01-6.567-6.567l1.428-1.428a1.364 1.364 0 00.303-1.593L8.665 4.21a1.366 1.366 0 00-1.536-.777l-4.14 1.035A1.364 1.364 0 002 5.803C2 14.733 9.267 22 18.197 22a1.364 1.364 0 001.335-1.014l1.035-4.14a1.367 1.367 0 00-.201-1.928z" />
                 </svg>
-                <span className="whitespace-nowrap text-[11px] sm:text-[13px]">+91- 9838850287</span>
+                <span className="whitespace-nowrap text-[11px] sm:text-[13px]">
+                  <span className="text-white/80 font-medium hidden sm:inline">Helpline No. 1: </span>
+                  <strong className="font-bold text-white">8840376333</strong>
+                </span>
+              </a>
+
+              {/* HelpLine No. 2 */}
+              <a href="tel:9838850287" className="inline-flex items-center gap-1.5 hover:text-blue-200 transition-colors border-l border-white/20 pl-2 sm:pl-3" title="Call HelpLine No. 2">
+                <svg className="w-[14px] h-[14px] text-[#35b6b4]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21.366 16.918l-3.234-1.618a1.364 1.364 0 00-1.593.303l-1.428 1.428a15.707 15.707 0 01-6.567-6.567l1.428-1.428a1.364 1.364 0 00.303-1.593L8.665 4.21a1.366 1.366 0 00-1.536-.777l-4.14 1.035A1.364 1.364 0 002 5.803C2 14.733 9.267 22 18.197 22a1.364 1.364 0 001.335-1.014l1.035-4.14a1.367 1.367 0 00-.201-1.928z" />
+                </svg>
+                <span className="whitespace-nowrap text-[11px] sm:text-[13px]">
+                  <span className="text-white/80 font-medium hidden sm:inline">HelpLine No. 2: </span>
+                  <strong className="font-bold text-white">9838850287</strong>
+                </span>
               </a>
 
             </div>
